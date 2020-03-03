@@ -4,8 +4,8 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpFoundation\Res;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ShowController extends AbstractController
 {
@@ -16,6 +16,19 @@ class ShowController extends AbstractController
 		methods={"GET","HEAD"}
 	)*/
     public function showSchedule(){
+
+        return $this->render('tvshow/show.html.twig', [
+            'title' => 'TV Show',
+        ]);
+
+    }
+
+    /** @Route(
+		"/tv_show_data",
+		name="tv_show_schedule_data",
+		methods={"GET","HEAD"}
+	)*/
+    public function showScheduleData(){
 
         $_todayDate = date('Y-m-d');
         $client = HttpClient::create();
@@ -42,19 +55,17 @@ class ShowController extends AbstractController
 
 		//$content = $response->getContent();
 		$content = $response->toArray();
-        dump($content);exit;
-		$newArray = array();
-		foreach ($content['hits'] as $key => $value) {
-			//dump($value['created_at_i']);exit;
-			$createdTime = $value['created_at_i'];
-			$value['created_at_i'] = date("d-M-Y", $createdTime);
-			$newArray[] = $value;
-		}
+  // //       dump($content);exit;
+		// $newArray = array();
+		// foreach ($content as $key => $value) {
+		// 	$newArray[] = $value;
+		// }
 
-        return $this->render('tvshow/show.html.twig', [
-            'title' => 'TV Show',
-            'schedule' => $newArray,
-        ]);
+		return new JsonResponse([
+	            'error_no' => '0',
+	            'error_msg' => 'success',
+	            'schedule' => $content,
+         ]);
 
     }
 }

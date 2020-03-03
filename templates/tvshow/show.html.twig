@@ -23,23 +23,25 @@
 <div class="container">
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
-    <h1 class="display-4">Fluid jumbotron</h1>
-    <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+    <h1 class="display-4">TV Show</h1>
+    <p class="lead">Today program in our channel listed below, watch and enjoin the day !</p>
   </div>
 </div>
 <div class="table-responsive tableFixHead" >
 <table id="topStory" class="table table-bordered table-hover ">
 	<thead class="thead-light">
 		<tr>
-			{% for key, header in colHeader %}
-        		<th > {{ header }}</th>
-    		{% endfor %}
+			<th colspan="2"><center>Programs Schedule</center></th>
+		</tr>
+		<tr>
+			<th >Timing</th>
+			<th >Watch</th>
 		</tr>
 	</thead>
-	<tbody class="refresh-data-news">
-		
+	<tbody class="refresh-data-program">
+	
 		 	<tr>
-		 	<td colspan="7"> Loading ...</td>	
+		 	<td colspan="3"> Loading ...</td>
 		 	</tr>
 	        
 	</tbody>
@@ -57,47 +59,34 @@
 $(document).ready(function() {
 	var forSpinner = '<div class="d-flex align-items-center">  <strong>Loading...</strong>  <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div></div>';
 
-    $(".refresh-data").on("click", function(e){  
-    	var $link = $(e.currentTarget);
-    	var search_by = $('#search_by').val();
-    	var sort_by = $('#sort_by').val();
-    	var data_count = $('#data_count').val();
-    	var search_for = $('#search_for').val();
-    	var dummyTr = '<tr><td colspan="7">'+forSpinner+'</td></tr>';
-    	$('.refresh-data-news').html(dummyTr);
-        $.ajax({  
-			url:        '/top_content',  
-			type:       'POST',   
-			dataType:   'json',  
-			async:      true,  
-			data: {search_by:search_by,sort_by:sort_by,data_count:data_count,search_for:search_for},
-			success: function(data, status) {  
-				console.log(status);
-	           	if(data.error_no != '0' || data.error_msg !='success'){
-			      	alert(data.error_msg);
-			      	return;
-				}
-				var htmlContent = '';
-				$.each(data.stories, function(key, value) {
-						htmlContent = htmlContent 
-						+'<tr>'
-						+'<td>'+ value.objectID + '</td>'
-						+'<td>'+ value.title + '</td>'
-						+'<td class="forUrl"> <a target="_blank" href="'+ value.url + '" >'+ value.url + '</a></td>'
-						+'<td>'+ value.num_comments + '</td>'
-						+'<td>'+ value.points + '</td>'
-						+'<td class="forDate">'+ value.created_at_i + '</td>'
-						+'<td class="forAuthor">'+ value.author + '</td>'
-						+'</tr>'
-				});
-				$('.refresh-data-news').html(htmlContent);
-			   },  
-			   error : function(xhr, textStatus, errorThrown) {  
-			      alert('Ajax request failed.');  
-			   }  
-			});  
-		});  
-    $(".refresh-data").trigger('click');
+    var dummyTr = '<tr><td colspan="7">'+forSpinner+'</td></tr>';
+	$('.refresh-data-program').html(dummyTr);
+    $.ajax({  
+		url:        '/tv_show_data',  
+		type:       'GET',   
+		dataType:   'json',  
+		async:      true,  
+		data: {'tvshow':'tvshow'},
+		success: function(data, status) {  
+			console.log(status);
+           	if(data.error_no != '0' || data.error_msg !='success'){
+		      	alert(data.error_msg);
+		      	return;
+			}
+			var htmlContent = '';
+			$.each(data.schedule, function(key, value) {
+					htmlContent = htmlContent 
+					+'<tr>'
+					+'<td>'+ value.airtime + '</td>'
+					+'<td class="forUrl"> <a target="_blank" href="'+ value.url + '" >'+ value.name + '</a></td>'
+					+'</tr>'
+			});
+			$('.refresh-data-program').html(htmlContent);
+		},  
+	   error : function(xhr, textStatus, errorThrown) {  
+	      alert('Ajax request failed.');  
+	   }  
+	});  
 });
 </script>
 {% endblock %}
